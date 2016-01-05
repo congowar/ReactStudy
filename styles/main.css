@@ -1,0 +1,31 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+.container {
+    text-align: center;
+}
+
+.btn {
+    padding: 12px 50px;
+    margin: 0 auto;
+    border-radius: 0;
+}
+
+.login-wrapper {
+    background: lightblue;
+    padding: 20px;
+    margin: 0 auto;
+}
+
+.header-text {
+    margin-bottom: 20px;
+    margin-top: 10px;
+    text-transform: uppercase;
+}
+
+.avatar {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
