@@ -2,7 +2,7 @@ $(function() {
     var app_id = '552216338261451';
     var scopes = 'email, user_friends, public_profile';
 
-    var btn_login = '<a href="#" id="login" class="btn btn-primary">LOGIN</a>';
+    var btn_login = '<a href="#" id="login" class="btn btn-primary">Log in with Facebook</a>';
     var div_session = '<div id="facebook-session">'+
                       '<strong></strong><br>'+
                       '<img class="avatar"><br>'+
@@ -30,7 +30,7 @@ $(function() {
             getFacebookData();
         } else {
             callback(false);
-        }
+        };
     };
 
     var checkLoginState = function(callback) {
@@ -46,11 +46,18 @@ $(function() {
             $('#login').after(div_session);
             $('#login').remove();
             $('#facebook-session strong').text("Name: " + response.name);
-            $('#facebook-session').text(response.link)
+            $('#facebook-session').text(response.link);
             $('#facebook-session img').attr('src', 'http://graph.facebook.com/' + response.id + '/picture?type=large');
-        })
+        });
+    };
 
-    }
+    var getPosts = function() {
+        FB.api("/{page-id}/feed", function (response) {
+                if (response && !response.error) {
+                }
+            }
+        );
+    };
 
     var facebookLogin = function() {
         checkLoginState(function(response) {
@@ -58,6 +65,7 @@ $(function() {
                 FB.login(function(response) {
                     if (response.status === 'connected')
                     getFacebookData();
+                    getPosts();
                 }, {scope: scopes});
             };
         });
