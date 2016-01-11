@@ -19,9 +19,10 @@
 }
 
 .login-wrapper {
-    background: lightgray;
     padding: 20px;
     margin: 0 auto;
+    width: 60%;
+    border: 1px solid lightgray;
 }
 
 .header-text {
@@ -33,4 +34,34 @@
 .avatar {
     margin-top: 20px;
     margin-bottom: 20px;
+}
+
+.post-container {
+    text-align: left;
+}
+
+#facebook-post p {
+    text-align: left;
+}
+
+#facebook-post img {
+
+}
+
+.separator {
+    height: 1px;
+    width: 100%;
+    background-color: #E6E6E6;
+    margin: 0 auto;
+}
+
+.post-description {
+    margin-bottom: 30px;
+    font-size: 16px;
+    padding: 20px;
+    border: 1px solid #E6E6E6;
+}
+
+.post-header {
+    text-align: left;
 }

@@ -1,6 +1,9 @@
 $(function() {
     var app_id = '552216338261451';
+    var user_id = '';
+    var postsLimit = 10;
     var scopes = 'email, user_friends, public_profile';
+    var postData = [];
 
     var btn_login = '<a href="#" id="login" class="btn btn-primary">Log in with Facebook</a>';
     var div_session = '<div id="facebook-session">'+
@@ -28,6 +31,7 @@ $(function() {
         console.log(response);
         if (response.status === 'connected') {
             getFacebookData();
+            getPosts();
         } else {
             callback(false);
         };
@@ -36,6 +40,7 @@ $(function() {
     var checkLoginState = function(callback) {
         FB.getLoginStatus(function(response) {
             statusChangeCallback(response, function(data) {
+                console.log(data);
                 callback(data);
             });
         });
@@ -52,11 +57,40 @@ $(function() {
     };
 
     var getPosts = function() {
-        FB.api("/{page-id}/feed", function (response) {
-                if (response && !response.error) {
-                }
+        FB.api('/me', 'GET', {"fields": "posts.limit(" + postsLimit + "){full_picture, name, caption, description, icon}"},
+            function(response) {
+            var posts = response.posts.data;
+
+            for (var i = 0; i < posts.length; i++) {
+                postData.push({
+                    name: posts[i].name,
+                    description: posts[i].description,
+                    picture: posts[i].full_picture,
+                    caption: posts[i].caption,
+                    icon: posts[i].icon
+                });
+            };
+        });
+
+        var FacebookPost = React.createClass({
+            render: function() {
+                return (
+                    <div>
+                        {this.props.data.map(function(current, index) {
+                            return <div className="post-block">
+                                      <h2 className="post-header">Header</h2>
+                                      <p>From: {current.name}</p><img src={current.icon} />
+                                      <img src={current.picture} width="100%" />
+                                      <p className="post-description">{current.description}</p>;
+                                      <div className="separator"></div>
+                                   </div>;
+                        })}
+                    </div>
+                )
             }
-        );
+        });
+
+        ReactDOM.render(<FacebookPost data={postData} />, document.getElementById('facebook-post'));
     };
 
     var facebookLogin = function() {
