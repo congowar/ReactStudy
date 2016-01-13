@@ -8,27 +8,43 @@
 }
 
 .btn {
-    padding: 12px 50px;
+    padding: 8px 34px;
     margin: 0 auto;
     border-radius: 0;
     font-size: 16px;
+}
+
+#logout {
+    padding: 3px 16px;
+    font-size: 8px;
+    border-radius: 3px;
+    position: absolute;
+    bottom: 3px;
+    right: 10px;
 }
 
 .btn-primary {
     background-color: #3b5998 !important;
 }
 
-.login-wrapper {
+.post-wrapper {
     padding: 20px;
+    padding-top: 5px;
     margin: 0 auto;
-    width: 60%;
     border: 1px solid lightgray;
+    border-top: none;
+    width: 70%;
 }
 
 .header-text {
     margin-bottom: 20px;
-    margin-top: 10px;
     text-transform: uppercase;
+    float: left;
+    position: relative;
+    top: 24px;
+    left: 33px;
+    color: white;
+    font-size: 20px;
 }
 
 .avatar {
@@ -38,6 +54,10 @@
 
 .post-container {
     text-align: left;
+}
+
+#facebook-post {
+
 }
 
 #facebook-post p {
@@ -56,12 +76,139 @@
 }
 
 .post-description {
-    margin-bottom: 30px;
+    margin-top: 12px;
     font-size: 16px;
-    padding: 20px;
+    padding: 12px;
     border: 1px solid #E6E6E6;
+    float: left;
+    font-family: "Open Sans", sans-serif;
+    letter-spacing: -0.5px;
+
+    -webkit-box-shadow: 0 1px 5px -2px rgba(0, 0, 0, 0.3);
+       -moz-box-shadow: 0 1px 5px -2px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 1px 5px -2px rgba(0, 0, 0, 0.3);
+
+    -webkit-border-radius: 3px;
+       -moz-border-radius: 3px;
+            border-radius: 3px;
+}
+
+.post-description img {
+    float: left;
+    margin-right: 30px;
 }
 
 .post-header {
     text-align: left;
+    font-size: 26px;
+}
+
+#downloadmore {
+    color: white;
+    background-color: #4B7BA5;
+}
+
+.clr {
+    clear: both;
+}
+
+.user-avatar,
+.wrapper-name
+{
+    float: left;
+    display: inline-block;
+}
+
+.user-avatar {
+    margin-right: 8px;
+}
+
+.user-avatar > img {
+    border: 2px solid white;
+    border-radius: 10px;
+}
+
+.user-data {
+    text-align: left;
+    margin: 0;
+    font-size: 12px;
+    color: black;
+}
+
+.wrapper-name {
+    position: relative;
+    top: 5px;
+}
+
+.wrapper-block {
+    overflow: hidden;
+    padding: 10px;
+    position: relative;
+    float: right;
+    margin-right: 14px;
+}
+
+#facebook-login {
+
+}
+
+.login-wrapper {
+    background-color: #4B7BA5;
+    height: 78px;
+}
+
+.logo {
+    position: relative;
+    top: 14px;
+    left: 20px;
+}
+
+.logo img{
+    float: left;
+}
+
+.user-info {
+    color: #EEEEEE;
+}
+
+.post-info {
+    margin-bottom: 0;
+    letter-spacing: -0.5px;
+}
+
+#button-dwnd-container {
+    margin-top: 30px;
+    margin-bottom: 46px;
+}
+
+.parent-wrapper {
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.parent-wrapper > img:first-child {
+    float: left;
+    margin-right: 14px;
+    border: 2px solid #4B7BA5;
+    border-radius: 10px;
+}
+
+.parent-wrapper > p:nth-child(2) {
+    margin-top: 7px;
+}
+
+#login {
+    background-color: #4B7BA5 !important;
+    border: none;
+    font-size: 28px;
+    display: table;
+    position: relative;
+    top: 400px;
+}
+
+.login-text {
+    display: table-cell;
+    position: relative;
+    left: 18px;
+    vertical-align: middle;
 }
