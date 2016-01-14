@@ -33,29 +33,65 @@ $(function() {
         }
     });
 
+
     var FacebookPost = React.createClass({
+
+        readMore: function(postData, index) {
+            var button = $("[data-id=" + index + "]");
+            var buttons = $('.read-more');
+            var closebutton = $("[data-idclose=" + index + "]");
+            var post = button.closest('.post-block');
+            var descriptionBlocks = $('.post-description');
+
+            //for (var i = 0; i<=buttons.length) {
+            //
+            //}
+
+            closebutton.css({"display": "table"});
+
+            descriptionBlocks.animate({
+                "width": "40%"
+            }, 400);
+        },
+
+        closePost: function() {
+            console.log("closePost is working");
+        },
+
         render: function() {
             var shortLink = '';
-
+            var _this = this;
             return (
                 <div className="post-wrapper">
                     {this.props.data.map(function(current, index) {
-
                         shortLink = current.link.slice(0, 40) + "...";
 
                         return <div className="post-block">
-                            <h2 className="post-header">{current.header}</h2>
 
+                            <h2 className="post-header">{current.header}</h2>
                             <div className="parent-wrapper">
+
                                 <img src={'http://graph.facebook.com/' + current.pageId + '/picture?type=normal'} width="60px"/>
                                 <p className="post-info"><strong>Name: </strong>{current.name}</p>
                                 <p className="post-info"><strong>Link: </strong><a href={current.link} target="_blank">{shortLink}</a></p>
-                                <p className="post-description">
+
+                                <div className="button-wrapper">
+                                    <div onClick={_this.closePost.bind(this, current, index)} data-idclose={index} className="btn close-btn">
+                                        <i className="fa fa-times-circle close-sm"></i>Close
+                                    </div>
+                                    <div onClick={_this.readMore.bind(this, current, index)} data-id={index} className="btn read-more">
+                                        <i className="fa fa-chevron-right fa-lg chevron-sm"></i>Read More
+                                    </div>
+                                </div>
+
+                                <div className="post-description">
                                     <img src={current.picture} width="40%" />
-                                    {current.description}
-                                </p>
+                                    <p className="description-text">{current.description}</p>
+                                </div>
+
                             </div>
                             <div className="separator"></div>
+
                         </div>
                     })}
                 </div>
