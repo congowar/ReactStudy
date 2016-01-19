@@ -3,6 +3,7 @@ $(function() {
     var scopes = 'email, user_friends, public_profile';
     var postData = [];
     var userData = {};
+    var postsId = [];
     var postsLimit = 20;
 
     var FacebookUserLogin = React.createClass({
@@ -176,92 +177,72 @@ $(function() {
     };
 
     var getFacebookData = function() {
+
         FB.api('/me', 'GET',
             {"fields": "id, name, email, posts.limit(" + postsLimit + "){full_picture, name, description, link, parent_id}"},
             function(response) {
-            var posts = response.posts.data;
+                var posts = response.posts.data;
 
-            userData.id = response.id;
-            userData.email = response.email;
-            userData.name = response.name;
-            userData.avatar = 'http://graph.facebook.com/' + response.id + '/picture?type=small';
+                userData.id = response.id;
+                userData.email = response.email;
+                userData.name = response.name;
+                userData.avatar = 'http://graph.facebook.com/' + response.id + '/picture?type=small';
 
-            for (var i = postsLimit - 20; i < posts.length; i++) {
-                postData.push({
-                    name: posts[i].name,
-                    description: posts[i].description,
-                    picture: posts[i].full_picture,
-                    link: posts[i].link,
-                    parentId: posts[i].parent_id,
+                for (var i = postsLimit - 20; i < posts.length; i++) {
+                    postData.push({
+                        name: posts[i].name,
+                        description: posts[i].description,
+                        picture: posts[i].full_picture,
+                        link: posts[i].link,
+                        parentId: posts[i].parent_id,
 
-                    //get post-header from description
-                    get header() {
-                        var header = [];
-                        if (this.description)
-                            header.push(this.description.split('.', 1));
-                        else
-                            header.push(this.name);
-                        return header;
-                    },
+                        get header() {
+                            var header = [];
+                            if (this.description)
+                                header.push(this.description.split('.', 1));
+                            else
+                                header.push(this.name);
+                            return header;
+                        },
 
-                    get pageId() {
-                        var id = [];
-                        if (this.parentId)
-                            id.push(this.parentId.split('_', 1));
-                        return id;
-                    },
+                        get pageId() {
+                            var id = [];
+                            if (this.parentId)
+                                id.push(this.parentId.split('_', 1));
+                            return id;
+                        },
+                    });
+                };
 
-                    get comments() {
-                        var commentsData = [];
-                        var self = this;
-                        var getPostComments = function() {
-                            FB.api(self.parentId, 'GET',
-                                {"fields": "comments, likes"},
-                                function(response) {
-                                    return response.comments;
-                                    //if (response.comments != undefined)
-                                    //    commentsData.push(response.comments.data);
-                                    //else
-                                    //    commentsData.push("No comments yet");
-                                    //return commentsData;
+                postData.forEach(function(current){
+                    if (current.parentId) {
+                        var post_id = current.parentId;
+
+                        FB.api(post_id, 'GET',
+                            {"fields": "comments, likes.limit(1000){name, id}"},
+                            function(response) {
+                                if (response.likes != undefined) {
+                                    current.likes = response.likes.data;
+                                    current.likesCount = response.likes.data.length;
                                 }
-                            );
-                        }
-                        return getPostComments();
+                                else {
+                                    current.likes = '0';
+                                    current.likesCount = '0';
+                                };
+
+                                if (response.comments != undefined)
+                                    current.comments = response.comments.data;
+                                else
+                                    current.comments = "No comment yet";
+                            }
+                        );
                     }
-
                 });
-            };
 
-            //postData.forEach(function(current){
-            //    if (current.parentId) {
-            //        var post_id = current.parentId;
-            //        FB.api(post_id, 'GET',
-            //            {"fields": "comments, likes.limit(1000){name, id}"},
-            //            function(response) {
-            //                if (response.likes) {
-            //                    current.likes = response.likes.data;
-            //                    current.likesCount = response.likes.data.length;
-            //                }
-            //                else {
-            //                    current.likes = '';
-            //                    current.likesCount = '0';
-            //                };
-            //
-            //                if (response.comments)
-            //                    current.comments = response.comments.data;
-            //                else
-            //                    current.comments = 'No comments yet';
-            //            }
-            //        );
-            //    }
-            //});
-
-            console.log(postData);
-            ReactDOM.render(<FacebookUserLogin data={userData} />, document.getElementById('facebook-login'));
-            ReactDOM.render(<FacebookPost data={postData} />, document.getElementById('facebook-post'));
-            ReactDOM.render(<DownloadButton />, document.getElementById('button-dwnd-container'));
-
+                console.log(postData);
+                ReactDOM.render(<FacebookPost data={postData} />, document.getElementById('facebook-post'));
+                ReactDOM.render(<FacebookUserLogin data={userData} />, document.getElementById('facebook-login'));
+                ReactDOM.render(<DownloadButton />, document.getElementById('button-dwnd-container'));
             }
         );
     };
