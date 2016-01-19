@@ -3,10 +3,10 @@ $(function() {
     var scopes = 'email, user_friends, public_profile';
     var postData = [];
     var userData = {};
-    var postsLimit = 5;
-
+    var postsLimit = 20;
 
     var FacebookUserLogin = React.createClass({
+
         render: function() {
             var user = this.props.data;
             return (
@@ -38,24 +38,39 @@ $(function() {
 
         readMore: function(postData, index) {
             var button = $("[data-id=" + index + "]");
-            var buttons = $('.read-more');
-            var closebutton = $("[data-idclose=" + index + "]");
             var post = button.closest('.post-block');
-            var descriptionBlocks = $('.post-description');
+            var closebutton = $("[data-idclose=" + index + "]");
 
-            //for (var i = 0; i<=buttons.length) {
-            //
-            //}
+            //add class to active post
+            post.addClass('active-post');
 
+            //hide all buttons 'readmore' and change style to all 'post-blocks'
+            for (var i = 0; i <= postsLimit; i++) {
+                $("[data-id=" + i + "]").hide();
+                if (index != i)
+                    $("[data-post=" + i + "]").addClass('small-post');
+            };
+
+            //show 'closebutton'
             closebutton.css({"display": "table"});
-
-            descriptionBlocks.animate({
-                "width": "40%"
-            }, 400);
         },
 
-        closePost: function() {
-            console.log("closePost is working");
+        closePost: function(postData, index) {
+            var button = $("[data-id=" + index + "]");
+            var post = button.closest('.post-block');
+            var closebutton = $("[data-idclose=" + index + "]");
+
+            //remove active post class
+            post.removeClass('active-post');
+
+            //show all button 'read-more' and return full width to 'post-blocks'
+            for (var i = 0; i <= postsLimit; i++) {
+                $("[data-id=" + i + "]").css({"display": "table"});
+                $("[data-post=" + i + "]").removeClass('small-post');
+            };
+
+            //hide 'closebutton'
+            closebutton.hide();
         },
 
         render: function() {
@@ -66,34 +81,37 @@ $(function() {
                     {this.props.data.map(function(current, index) {
                         shortLink = current.link.slice(0, 40) + "...";
 
-                        return <div className="post-block">
-
-                            <h2 className="post-header">{current.header}</h2>
-                            <div className="parent-wrapper">
-
-                                <img src={'http://graph.facebook.com/' + current.pageId + '/picture?type=normal'} width="60px"/>
-                                <p className="post-info"><strong>Name: </strong>{current.name}</p>
-                                <p className="post-info"><strong>Link: </strong><a href={current.link} target="_blank">{shortLink}</a></p>
-
-                                <div className="button-wrapper">
-                                    <div onClick={_this.closePost.bind(this, current, index)} data-idclose={index} className="btn close-btn">
-                                        <i className="fa fa-times-circle close-sm"></i>Close
+                        return (
+                            <div className="post-block" data-post={index}>
+                                <h2 className="post-header">{current.header}</h2>
+                                <div className="parent-wrapper">
+                                    <img src={'http://graph.facebook.com/' + current.pageId + '/picture?type=normal'} width="60px"/>
+                                    <p className="post-info"><strong>Name: </strong>{current.name}</p>
+                                    <p className="post-info"><strong>Link: </strong><a href={current.link} target="_blank">{shortLink}</a></p>
+                                    <div className="button-wrapper">
+                                        <div onClick={_this.closePost.bind(this, current, index)} data-idclose={index} className="btn close-btn">
+                                            <i className="fa fa-times-circle close-sm"></i>Close
+                                        </div>
+                                        <div onClick={_this.readMore.bind(this, current, index)} data-id={index} className="btn read-more">
+                                            <i className="fa fa-chevron-right fa-lg chevron-sm"></i>Read More
+                                        </div>
                                     </div>
-                                    <div onClick={_this.readMore.bind(this, current, index)} data-id={index} className="btn read-more">
-                                        <i className="fa fa-chevron-right fa-lg chevron-sm"></i>Read More
+
+                                    <div className="post-description">
+                                        <img src={current.picture} width="40%" />
+                                        <p className="description-text">{current.description}</p>
+
+                                        <div className="likes">
+                                            <i className="fa fa-thumbs-up fa-lg"></i>Like this post:
+                                            <p className="likes-text">{current.likesCount}</p>
+                                        </div>
                                     </div>
+
                                 </div>
-
-                                <div className="post-description">
-                                    <img src={current.picture} width="40%" />
-                                    <p className="description-text">{current.description}</p>
-                                </div>
-
-                            </div>
-                            <div className="separator"></div>
-
-                        </div>
+                                <div className="separator"></div>
+                            </div>)
                     })}
+
                 </div>
             );
         }
@@ -114,9 +132,8 @@ $(function() {
 
     var DownloadButton = React.createClass({
         getNewPosts: function() {
-            postsLimit += 5;
+            postsLimit += 20;
             getFacebookData();
-            console.log("Current posts: " + postsLimit);
         },
 
         render: function() {
@@ -162,7 +179,6 @@ $(function() {
         FB.api('/me', 'GET',
             {"fields": "id, name, email, posts.limit(" + postsLimit + "){full_picture, name, description, link, parent_id}"},
             function(response) {
-
             var posts = response.posts.data;
 
             userData.id = response.id;
@@ -170,7 +186,7 @@ $(function() {
             userData.name = response.name;
             userData.avatar = 'http://graph.facebook.com/' + response.id + '/picture?type=small';
 
-            for (var i = postsLimit - 5; i < posts.length; i++) {
+            for (var i = postsLimit - 20; i < posts.length; i++) {
                 postData.push({
                     name: posts[i].name,
                     description: posts[i].description,
@@ -193,15 +209,61 @@ $(function() {
                         if (this.parentId)
                             id.push(this.parentId.split('_', 1));
                         return id;
+                    },
+
+                    get comments() {
+                        var commentsData = [];
+                        var self = this;
+                        var getPostComments = function() {
+                            FB.api(self.parentId, 'GET',
+                                {"fields": "comments, likes"},
+                                function(response) {
+                                    return response.comments;
+                                    //if (response.comments != undefined)
+                                    //    commentsData.push(response.comments.data);
+                                    //else
+                                    //    commentsData.push("No comments yet");
+                                    //return commentsData;
+                                }
+                            );
+                        }
+                        return getPostComments();
                     }
+
                 });
             };
+
+            //postData.forEach(function(current){
+            //    if (current.parentId) {
+            //        var post_id = current.parentId;
+            //        FB.api(post_id, 'GET',
+            //            {"fields": "comments, likes.limit(1000){name, id}"},
+            //            function(response) {
+            //                if (response.likes) {
+            //                    current.likes = response.likes.data;
+            //                    current.likesCount = response.likes.data.length;
+            //                }
+            //                else {
+            //                    current.likes = '';
+            //                    current.likesCount = '0';
+            //                };
+            //
+            //                if (response.comments)
+            //                    current.comments = response.comments.data;
+            //                else
+            //                    current.comments = 'No comments yet';
+            //            }
+            //        );
+            //    }
+            //});
 
             console.log(postData);
             ReactDOM.render(<FacebookUserLogin data={userData} />, document.getElementById('facebook-login'));
             ReactDOM.render(<FacebookPost data={postData} />, document.getElementById('facebook-post'));
             ReactDOM.render(<DownloadButton />, document.getElementById('button-dwnd-container'));
-        });
+
+            }
+        );
     };
 
     var facebookLogin = function() {
